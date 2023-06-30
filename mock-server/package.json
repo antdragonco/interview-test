@@ -1,0 +1,9 @@
+{
+  "name": "mock-server",
+  "scripts": {
+    "server": "json-server --watch ./db.json"
+  },
+  "devDependencies": {
+    "json-server": "^0.17.3"
+  }
+}
