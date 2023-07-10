@@ -22,7 +22,7 @@ const Home = () => {
           paddingBottom: 10,
         }}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={() => handelDelete(item.id)}>
+        <TouchableOpacity onPress={() => handelDelete(id)}>
           <Text style={styles.txt_del}>Delete</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity onPress={() => handleEdit(item)}>
@@ -37,20 +37,12 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [visible, setViisble] = useState(false);
   const [hideId, setHideId] = useState(null);
-  const [title, setTitle] = useState();
-  const [desc, setDesc] = useState();
+  const [title, onChangeTitle] = useState('');
+  const [desc, onChangeDesc] = useState('');
 
   const handleVisibleModal = () => {
     setViisble(!visible);
     setHideId(null);
-  };
-
-  const onChangeTitle = value => {
-    setTitle(value);
-  };
-
-  const onChangeDesc = value => {
-    setDesc(value);
   };
 
   const url = 'http://localhost:3000/items';
@@ -89,6 +81,20 @@ const Home = () => {
     setViisble(!visible);
     addTask();
     getTask();
+    onChangeTitle('');
+    onChangeDesc('');
+  };
+
+  const handelDelete = (id: string) => {
+    fetch(`${url}/${id}`, {
+      method: 'DELETE',
+    })
+      .then(response => response.json())
+      .then(() => {
+        setData(values => {
+          return values.filter(item => item.id !== id);
+        });
+      });
   };
 
   return (

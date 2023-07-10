@@ -17,26 +17,6 @@
       "title": "Task 3",
       "description": "This is the description for Task 3.",
       "completed": false
-    },
-    {
-      "title": "Test",
-      "description": "Test 1 kajsaksjd",
-      "id": 4
-    },
-    {
-      "title": "Testing",
-      "description": "Hello",
-      "id": 5
-    },
-    {
-      "title": "Testing daa",
-      "description": "Hello",
-      "id": 6
-    },
-    {
-      "title": "Testing as Alanx",
-      "description": "Hello",
-      "id": 7
     }
   ],
   "images": [
