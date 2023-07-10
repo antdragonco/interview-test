@@ -22,7 +22,7 @@ function App(): JSX.Element {
       <Tab.Navigator initialRouteName="Home">
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Explore" component={Explore} />
-        <Tab.Screen name="Notification" component={Notification} />
+        <Tab.Screen name="Notifications" component={Notification} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     </NavigationContainer>
