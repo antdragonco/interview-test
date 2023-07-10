@@ -54,13 +54,42 @@ const Home = () => {
   };
 
   const url = 'http://localhost:3000/items';
+
+  const getTask = async () => {
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(url)
-      .then(response => response.json())
-      .then(json => setData(json))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false));
+    getTask();
   }, []);
+
+  const addTask = () => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: title,
+        description: desc,
+      }),
+    });
+  };
+
+  const handleAddTask = () => {
+    setViisble(!visible);
+    addTask();
+    getTask();
+  };
 
   return (
     <SafeAreaView>
@@ -70,7 +99,7 @@ const Home = () => {
           <TouchableOpacity
             onPress={handleVisibleModal}
             style={styles.btnNewContainer}>
-            <Text style={styles.textButton}>New Course</Text>
+            <Text style={styles.textButton}>New Task</Text>
           </TouchableOpacity>
         </View>
         <Modal animationType="slide" visible={visible}>
@@ -91,6 +120,11 @@ const Home = () => {
                 placeholder="Desc"
                 onChangeText={onChangeDesc}
               />
+              <TouchableOpacity
+                onPress={handleAddTask}
+                style={styles.btnNewContainer}>
+                <Text style={styles.textButton}>Save</Text>
+              </TouchableOpacity>
             </View>
           </SafeAreaView>
         </Modal>
