@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Switch,
 } from 'react-native';
 
 const Home = () => {
@@ -25,9 +26,10 @@ const Home = () => {
         <TouchableOpacity onPress={() => handelDelete(id)}>
           <Text style={styles.txt_del}>Delete</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => handleEdit(item)}>
+        <TouchableOpacity
+          onPress={() => handleVisibleUpdate(id, title, description)}>
           <Text style={styles.txt_edit}>Edit</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
       <Text style={styles.desc}>{description}</Text>
     </View>
@@ -36,13 +38,20 @@ const Home = () => {
   const [data, setData] = useState<dataType[]>([]);
   const [loading, setLoading] = useState(true);
   const [visible, setViisble] = useState(false);
-  const [hideId, setHideId] = useState(null);
+  const [taskId, setTaskId] = useState('');
   const [title, onChangeTitle] = useState('');
   const [desc, onChangeDesc] = useState('');
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const toggleSwitch = () => setIsCompleted(previousState => !previousState);
 
   const handleVisibleModal = () => {
     setViisble(!visible);
-    setHideId(null);
+    setIsUpdate(false);
+    onChangeTitle('');
+    onChangeDesc('');
+    setIsCompleted(false);
+    setTaskId('');
   };
 
   const url = 'http://localhost:3000/items';
@@ -71,18 +80,45 @@ const Home = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        id: '',
         title: title,
         description: desc,
+        completed: isCompleted,
       }),
     });
   };
 
+  const updateTask = (id: string) => {
+    fetch(`${url}/${id}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: taskId,
+        title: title,
+        description: desc,
+        completed: isCompleted,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseData => {
+        console.log(JSON.stringify(responseData));
+      });
+  };
+
   const handleAddTask = () => {
     setViisble(!visible);
-    addTask();
-    getTask();
-    onChangeTitle('');
-    onChangeDesc('');
+    setIsUpdate(false);
+    if (title) {
+      addTask();
+      getTask();
+      onChangeTitle('');
+      onChangeDesc('');
+    } else {
+      console.log('Empty Submission');
+    }
   };
 
   const handelDelete = (id: string) => {
@@ -95,6 +131,24 @@ const Home = () => {
           return values.filter(item => item.id !== id);
         });
       });
+  };
+
+  const handleVisibleUpdate = (id: string, title: string, desc: string) => {
+    setTaskId(id);
+    onChangeTitle(title);
+    onChangeDesc(desc);
+    setViisble(!visible);
+    setIsUpdate(true);
+  };
+
+  const handelUpdateTask = () => {
+    if (title) {
+      updateTask(taskId);
+      getTask();
+      setViisble(!visible);
+    } else {
+      console.log('Empty Submission');
+    }
   };
 
   return (
@@ -111,6 +165,11 @@ const Home = () => {
         <Modal animationType="slide" visible={visible}>
           <SafeAreaView>
             <View style={styles.form}>
+              <Text>
+                {' '}
+                {title} {desc} {taskId} {isCompleted}
+              </Text>
+
               <TouchableOpacity onPress={handleVisibleModal}>
                 <Text style={styles.txtClose}>Close</Text>
               </TouchableOpacity>
@@ -126,11 +185,29 @@ const Home = () => {
                 placeholder="Desc"
                 onChangeText={onChangeDesc}
               />
-              <TouchableOpacity
-                onPress={handleAddTask}
-                style={styles.btnNewContainer}>
-                <Text style={styles.textButton}>Save</Text>
-              </TouchableOpacity>
+              <Text style={{fontSize: 20, padding: 5}}>Status:</Text>
+              <Switch
+                trackColor={{false: '#767577', true: 'green'}}
+                thumbColor={isCompleted ? 'white' : 'white'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isCompleted}
+                style={{padding: 10}}
+              />
+
+              {isUpdate ? (
+                <TouchableOpacity
+                  onPress={handelUpdateTask}
+                  style={styles.btnModalContainer}>
+                  <Text style={styles.textButton}>{'Update'}</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handleAddTask}
+                  style={styles.btnModalContainer}>
+                  <Text style={styles.textButton}>{'Submit'}</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </SafeAreaView>
         </Modal>
@@ -203,6 +280,19 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'green',
     borderRadius: 15,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 3, height: 3},
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  btnModalContainer: {
+    marginTop: 20,
+    padding: 10,
+    width: '50%',
+    backgroundColor: 'green',
+    borderRadius: 15,
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 3, height: 3},
     shadowOpacity: 0.3,
