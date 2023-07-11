@@ -20,17 +20,24 @@ const Home = () => {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingBottom: 10,
         }}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={() => handelDelete(id)}>
-          <Text style={styles.txt_del}>Delete</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleVisibleUpdate(id, title, description)}>
-          <Text style={styles.txt_edit}>Edit</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            marginBottom: 10,
+          }}>
+          <TouchableOpacity onPress={() => handelDelete(id)}>
+            <Text style={styles.txt_del}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleVisibleUpdate(id, title, description)}>
+            <Text style={styles.txt_edit}>Edit</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
       <Text style={styles.desc}>{description}</Text>
     </View>
   );
@@ -250,19 +257,19 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    marginBottom: 10,
   },
   desc: {
     fontSize: 14,
   },
   txt_del: {
     fontSize: 14,
-    marginTop: 5,
+    marginEnd: 10,
     color: 'red',
     fontWeight: 'bold',
   },
   txt_edit: {
     fontSize: 14,
-    marginTop: 5,
     color: 'blue',
     fontWeight: 'bold',
   },
