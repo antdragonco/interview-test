@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
 const Profile = () => {
@@ -16,12 +17,21 @@ const Profile = () => {
 
   const url = 'http://localhost:3000/profile';
   const brl = data.avatar;
+
+  const getProfile = async () => {
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(url)
-      .then(response => response.json())
-      .then(json => setData(json))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false));
+    getProfile();
   }, []);
 
   const handleVisibleModal = () => {};
@@ -30,7 +40,7 @@ const Profile = () => {
     <SafeAreaView>
       <View style={styles.container}>
         {loading ? (
-          <Text>Loading....</Text>
+          <ActivityIndicator size="large" />
         ) : (
           <View style={styles.container}>
             <Image source={{uri: brl}} style={styles.image} />
