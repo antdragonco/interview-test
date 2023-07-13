@@ -1,7 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, View, FlatList, StyleSheet, Text} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AntdesignIcon from 'react-native-vector-icons/AntDesign';
 
 const Notification = () => {
   type dataType = {id: string; message: string; read: boolean};
@@ -11,13 +17,21 @@ const Notification = () => {
       {read ? (
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={styles.title}>{message}</Text>
+          <Text
+            style={styles.title}
+            onPress={() => handleClick(id, message, !read)}>
+            Unread
+          </Text>
         </View>
       ) : (
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={styles.title_unread}>{message}</Text>
-          <Text>New</Text>
-          <Icon name="circle-thin" size={24} color="#900" />
-          <AntdesignIcon name="codesquare" size={30} color="red" />
+          <Text
+            style={styles.title_unread}
+            onPress={() => handleClick(id, message, !read)}>
+            Read
+          </Text>
+          {/* <Icon name="circle-thin" size={24} color="red" /> */}
         </View>
       )}
     </View>
@@ -27,24 +41,62 @@ const Notification = () => {
   const [loading, setLoading] = useState(true);
 
   const url = 'http://localhost:3000/notifications';
+  const getItems = async () => {
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(url)
-      .then(response => response.json())
-      .then(json => setData(json))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false));
+    getItems();
   }, []);
+
+  const updateItem = (id: string, message: string, read: boolean) => {
+    fetch(`${url}/${id}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
+        message: message,
+        read: read,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseData => {
+        console.log(JSON.stringify(responseData));
+      });
+  };
+
+  const handleClick = (id: string, message: string, read: boolean) => {
+    updateItem(id, message, read);
+    getItems();
+  };
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <FlatList
-          data={data}
-          renderItem={({item}) => (
-            <Item id={item.id} message={item.message} read={item.read} />
-          )}
-          ItemSeparatorComponent={() => <View style={styles.separator}></View>}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <FlatList
+            data={data}
+            renderItem={({item}) => (
+              <Item id={item.id} message={item.message} read={item.read} />
+            )}
+            ItemSeparatorComponent={() => (
+              <View style={styles.separator}></View>
+            )}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
