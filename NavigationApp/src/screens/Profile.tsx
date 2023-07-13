@@ -7,22 +7,28 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 const Profile = () => {
-  type dataType = {id: string; name: string; email: string; avatar: string};
-
-  const [data, setData] = useState<dataType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [id, onChangeId] = useState('');
+  const [name, onChangeName] = useState('');
+  const [email, onChangeEmail] = useState('');
+  const [image, onChangeImage] = useState('');
+  const [visible, setViisble] = useState(false);
 
   const url = 'http://localhost:3000/profile';
-  const brl = data.avatar;
 
   const getProfile = async () => {
     try {
       const response = await fetch(url);
       const json = await response.json();
-      setData(json);
+      onChangeId(json.id);
+      onChangeName(json.name);
+      onChangeEmail(json.email);
+      onChangeImage(json.avatar);
     } catch (error) {
       console.error(error);
     } finally {
@@ -34,7 +40,33 @@ const Profile = () => {
     getProfile();
   }, []);
 
-  const handleVisibleModal = () => {};
+  const updateTask = () => {
+    fetch(`${url}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
+        name: name,
+        email: email,
+        avatar: image,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseData => {
+        console.log(JSON.stringify(responseData));
+      });
+  };
+
+  const handleVisibleModal = () => {
+    setViisble(!visible);
+  };
+  const handelUpdateTask = () => {
+    updateTask();
+    setViisble(!visible);
+  };
 
   return (
     <SafeAreaView>
@@ -43,10 +75,43 @@ const Profile = () => {
           <ActivityIndicator size="large" />
         ) : (
           <View style={styles.container}>
-            <Image source={{uri: brl}} style={styles.image} />
+            <Modal animationType="slide" visible={visible}>
+              <SafeAreaView>
+                <View style={styles.form}>
+                  <TouchableOpacity onPress={handleVisibleModal}>
+                    <Text style={styles.txtClose}>Close</Text>
+                  </TouchableOpacity>
+                  <TextInput
+                    value={name}
+                    style={styles.text_input}
+                    placeholder="Name"
+                    onChangeText={onChangeName}
+                  />
+                  <TextInput
+                    value={email}
+                    style={styles.text_input}
+                    placeholder="Email Address"
+                    onChangeText={onChangeEmail}
+                  />
+
+                  <TextInput
+                    value={image}
+                    style={styles.text_input}
+                    placeholder="Image Url"
+                    onChangeText={onChangeImage}
+                  />
+                  <TouchableOpacity
+                    onPress={handelUpdateTask}
+                    style={styles.btnModalContainer}>
+                    <Text style={styles.textButton}>{'Update'}</Text>
+                  </TouchableOpacity>
+                </View>
+              </SafeAreaView>
+            </Modal>
+            <Image source={{uri: image}} style={styles.image} />
             <View>
-              <Text style={styles.textName}>{data.name}</Text>
-              <Text style={styles.textEmail}> {data.email}</Text>
+              <Text style={styles.textName}>{name}</Text>
+              <Text style={styles.textEmail}> {email}</Text>
             </View>
             <View style={styles.header_container}>
               <TouchableOpacity
@@ -109,5 +174,36 @@ const styles = StyleSheet.create({
   textButton: {
     textAlign: 'center',
     color: '#FFF',
+  },
+  text_input: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  txtClose: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'red',
+    marginVertical: 10,
+    textAlign: 'right',
+  },
+  form: {
+    padding: 20,
+    // backgroundColor : "#e3e3e3",
+    marginTop: 10,
+  },
+  btnModalContainer: {
+    marginTop: 20,
+    padding: 10,
+    width: '50%',
+    backgroundColor: 'green',
+    borderRadius: 15,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 3, height: 3},
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
 });
