@@ -1,12 +1,25 @@
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView, View, FlatList, StyleSheet, Text} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import AntdesignIcon from 'react-native-vector-icons/AntDesign';
 
 const Notification = () => {
-  type dataType = {id: string; message: string};
+  type dataType = {id: string; message: string; read: boolean};
 
-  const Item = ({id, message}: dataType) => (
+  const Item = ({id, message, read}: dataType) => (
     <View key={id} style={styles.item}>
-      <Text style={styles.title}>{message}</Text>
+      {read ? (
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.title}>{message}</Text>
+        </View>
+      ) : (
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.title_unread}>{message}</Text>
+          <Text>New</Text>
+          <Icon name="circle-thin" size={24} color="#900" />
+          <AntdesignIcon name="codesquare" size={30} color="red" />
+        </View>
+      )}
     </View>
   );
 
@@ -27,7 +40,9 @@ const Notification = () => {
       <View style={styles.container}>
         <FlatList
           data={data}
-          renderItem={({item}) => <Item id={item.id} message={item.message} />}
+          renderItem={({item}) => (
+            <Item id={item.id} message={item.message} read={item.read} />
+          )}
           ItemSeparatorComponent={() => <View style={styles.separator}></View>}
         />
       </View>
@@ -40,7 +55,6 @@ export default Notification;
 const styles = StyleSheet.create({
   container: {
     padding: 5,
-
     height: '100%',
     backgroundColor: 'white',
   },
@@ -52,6 +66,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+  },
+  title_unread: {
+    fontSize: 20,
+    color: '#218aff',
   },
   separator: {
     height: 2,

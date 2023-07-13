@@ -12,9 +12,24 @@ import {
 } from 'react-native';
 
 const Home = () => {
-  type dataType = {id: string; title: string; description: string};
+  const [data, setData] = useState<dataType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [visible, setViisble] = useState(false);
+  const [taskId, setTaskId] = useState('');
+  const [title, onChangeTitle] = useState('');
+  const [desc, onChangeDesc] = useState('');
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const toggleSwitch = () => setIsCompleted(previousState => !previousState);
 
-  const Item = ({id, title, description}: dataType) => (
+  type dataType = {
+    id: string;
+    title: string;
+    description: string;
+    completed: boolean;
+  };
+
+  const Item = ({id, title, description, completed}: dataType) => (
     <View key={id} style={styles.item}>
       <View
         style={{
@@ -32,7 +47,9 @@ const Home = () => {
             <Text style={styles.txt_del}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleVisibleUpdate(id, title, description)}>
+            onPress={() =>
+              handleVisibleUpdate(id, title, description, completed)
+            }>
             <Text style={styles.txt_edit}>Edit</Text>
           </TouchableOpacity>
         </View>
@@ -41,25 +58,6 @@ const Home = () => {
       <Text style={styles.desc}>{description}</Text>
     </View>
   );
-
-  const [data, setData] = useState<dataType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [visible, setViisble] = useState(false);
-  const [taskId, setTaskId] = useState('');
-  const [title, onChangeTitle] = useState('');
-  const [desc, onChangeDesc] = useState('');
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
-  const toggleSwitch = () => setIsCompleted(previousState => !previousState);
-
-  const handleVisibleModal = () => {
-    setViisble(!visible);
-    setIsUpdate(false);
-    onChangeTitle('');
-    onChangeDesc('');
-    setIsCompleted(false);
-    setTaskId('');
-  };
 
   const url = 'http://localhost:3000/items';
 
@@ -140,10 +138,25 @@ const Home = () => {
       });
   };
 
-  const handleVisibleUpdate = (id: string, title: string, desc: string) => {
+  const handleVisibleModal = () => {
+    setViisble(!visible);
+    setIsUpdate(false);
+    onChangeTitle('');
+    onChangeDesc('');
+    setIsCompleted(false);
+    setTaskId('');
+  };
+
+  const handleVisibleUpdate = (
+    id: string,
+    title: string,
+    desc: string,
+    completed: boolean,
+  ) => {
     setTaskId(id);
     onChangeTitle(title);
     onChangeDesc(desc);
+    setIsCompleted(completed);
     setViisble(!visible);
     setIsUpdate(true);
   };
@@ -174,7 +187,7 @@ const Home = () => {
             <View style={styles.form}>
               <Text>
                 {' '}
-                {title} {desc} {taskId} {isCompleted}
+                {taskId} {title} {desc} {isCompleted.toString()}
               </Text>
 
               <TouchableOpacity onPress={handleVisibleModal}>
@@ -195,7 +208,7 @@ const Home = () => {
               <Text style={{fontSize: 20, padding: 5}}>Status:</Text>
               <Switch
                 trackColor={{false: '#767577', true: 'green'}}
-                thumbColor={isCompleted ? 'white' : 'white'}
+                thumbColor={'white'}
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={toggleSwitch}
                 value={isCompleted}
@@ -226,6 +239,7 @@ const Home = () => {
                 id={item.id}
                 title={item.title}
                 description={item.description}
+                completed={item.completed}
               />
             </View>
           )}
