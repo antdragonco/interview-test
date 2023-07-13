@@ -1,5 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, View, Image, StyleSheet, Text} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 const Profile = () => {
   type dataType = {id: string; name: string; email: string; avatar: string};
@@ -17,6 +24,8 @@ const Profile = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleVisibleModal = () => {};
+
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -28,6 +37,13 @@ const Profile = () => {
             <View>
               <Text style={styles.textName}>{data.name}</Text>
               <Text style={styles.textEmail}> {data.email}</Text>
+            </View>
+            <View style={styles.header_container}>
+              <TouchableOpacity
+                onPress={handleVisibleModal}
+                style={styles.btnNewContainer}>
+                <Text style={styles.textButton}>Edit Profile</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -63,5 +79,25 @@ const styles = StyleSheet.create({
     borderRadius: 100 / 2,
     borderWidth: 3,
     borderColor: '#FFFFFF',
+  },
+  header_container: {
+    padding: 20,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  btnNewContainer: {
+    padding: 10,
+    backgroundColor: 'green',
+    borderRadius: 15,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 3, height: 3},
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  textButton: {
+    textAlign: 'center',
+    color: '#FFF',
   },
 });

@@ -185,10 +185,10 @@ const Home = () => {
         <Modal animationType="slide" visible={visible}>
           <SafeAreaView>
             <View style={styles.form}>
-              <Text>
+              {/* <Text>
                 {' '}
                 {taskId} {title} {desc} {isCompleted.toString()}
-              </Text>
+              </Text> */}
 
               <TouchableOpacity onPress={handleVisibleModal}>
                 <Text style={styles.txtClose}>Close</Text>
