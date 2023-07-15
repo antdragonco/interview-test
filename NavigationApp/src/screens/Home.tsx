@@ -11,6 +11,7 @@ import {
   Switch,
 } from 'react-native';
 import Button from '../components/Button';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const Home = () => {
   const [data, setData] = useState<dataType[]>([]);
@@ -117,7 +118,7 @@ const Home = () => {
   const handleAddTask = () => {
     setViisble(!visible);
     setIsUpdate(false);
-    if (title) {
+    if (title && desc) {
       addTask();
       getTask();
       onChangeTitle('');
@@ -173,86 +174,92 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.header_container}>
-          <Text style={styles.txt_main}>List of Tasks</Text>
-          <Button
-            isRed={false}
-            name="New Task"
-            handleOnPress={handleVisibleModal}
-          />
-        </View>
-        <Modal animationType="slide" visible={visible}>
-          <SafeAreaView>
-            <View style={styles.form}>
-              {/* <Text>
+    <>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <SafeAreaView>
+          <View style={styles.container}>
+            <View style={styles.header_container}>
+              <Text style={styles.txt_main}>List of Tasks</Text>
+              <Button
+                isRed={false}
+                name="New Task"
+                handleOnPress={handleVisibleModal}
+              />
+            </View>
+            <Modal animationType="slide" visible={visible}>
+              <SafeAreaView>
+                <View style={styles.form}>
+                  {/* <Text>
                 {' '}
                 {taskId} {title} {desc} {isCompleted.toString()}
               </Text> */}
 
-              <TouchableOpacity onPress={handleVisibleModal}>
-                <Text style={styles.txtClose}>Close</Text>
-              </TouchableOpacity>
-              <TextInput
-                value={title}
-                style={styles.text_input}
-                placeholder="Title"
-                onChangeText={onChangeTitle}
-              />
-              <TextInput
-                value={desc}
-                style={styles.text_input}
-                placeholder="Desc"
-                onChangeText={onChangeDesc}
-              />
-              <View
-                style={{
-                  paddingVertical: 10,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <Text style={{fontSize: 20}}>Status:</Text>
-                <Switch
-                  trackColor={{false: '#767577', true: 'green'}}
-                  thumbColor={'white'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={toggleSwitch}
-                  value={isCompleted}
-                />
-              </View>
+                  <TouchableOpacity onPress={handleVisibleModal}>
+                    <Text style={styles.txtClose}>Close</Text>
+                  </TouchableOpacity>
+                  <TextInput
+                    value={title}
+                    style={styles.text_input}
+                    placeholder="Title"
+                    onChangeText={onChangeTitle}
+                  />
+                  <TextInput
+                    value={desc}
+                    style={styles.text_input}
+                    placeholder="Desc"
+                    onChangeText={onChangeDesc}
+                  />
+                  <View
+                    style={{
+                      paddingVertical: 10,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{fontSize: 20}}>Status:</Text>
+                    <Switch
+                      trackColor={{false: '#767577', true: 'green'}}
+                      thumbColor={'white'}
+                      ios_backgroundColor="#3e3e3e"
+                      onValueChange={toggleSwitch}
+                      value={isCompleted}
+                    />
+                  </View>
 
-              {isUpdate ? (
-                <Button
-                  isRed={false}
-                  name="Update"
-                  handleOnPress={handelUpdateTask}
-                />
-              ) : (
-                <Button
-                  isRed={false}
-                  name="Submit"
-                  handleOnPress={handleAddTask}
-                />
+                  {isUpdate ? (
+                    <Button
+                      isRed={false}
+                      name="Update"
+                      handleOnPress={handelUpdateTask}
+                    />
+                  ) : (
+                    <Button
+                      isRed={false}
+                      name="Submit"
+                      handleOnPress={handleAddTask}
+                    />
+                  )}
+                </View>
+              </SafeAreaView>
+            </Modal>
+            <FlatList
+              data={data}
+              renderItem={({item}) => (
+                <View>
+                  <Item
+                    id={item.id}
+                    title={item.title}
+                    description={item.description}
+                    completed={item.completed}
+                  />
+                </View>
               )}
-            </View>
-          </SafeAreaView>
-        </Modal>
-        <FlatList
-          data={data}
-          renderItem={({item}) => (
-            <View>
-              <Item
-                id={item.id}
-                title={item.title}
-                description={item.description}
-                completed={item.completed}
-              />
-            </View>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+            />
+          </View>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 
