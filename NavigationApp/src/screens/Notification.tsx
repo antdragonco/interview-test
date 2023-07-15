@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const Notification = () => {
   type dataType = {id: string; message: string; read: boolean};
@@ -82,11 +83,11 @@ const Notification = () => {
   };
 
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        {loading ? (
-          <ActivityIndicator size="large" />
-        ) : (
+    <>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <SafeAreaView style={styles.container}>
           <FlatList
             data={data}
             renderItem={({item}) => (
@@ -96,9 +97,9 @@ const Notification = () => {
               <View style={styles.separator}></View>
             )}
           />
-        )}
-      </View>
-    </SafeAreaView>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 

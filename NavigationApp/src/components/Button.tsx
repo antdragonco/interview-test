@@ -8,12 +8,12 @@ import {
 } from 'react-native';
 import React from 'react';
 
-export interface Props {
+export type Props = {
   name: string;
   handleOnPress(): void;
   isRed: boolean;
   style?: StyleProp<ViewStyle>;
-}
+};
 
 const Button: React.FC<Props> = props => {
   return (
@@ -46,9 +46,11 @@ const styles = StyleSheet.create({
   textButton: {
     textAlign: 'center',
     color: 'white',
+    fontSize: 14,
   },
   textButtonRed: {
     textAlign: 'center',
     color: 'black',
+    fontSize: 14,
   },
 });

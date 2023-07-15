@@ -8,6 +8,8 @@ import {
   TextInput,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
+import LoadingIndicator from '../components/LoadingIndicator';
+import CustomSearchBar from '../components/CustomSearchBar';
 
 const Explore = () => {
   type dataType = {id: string; url: string; description: string};
@@ -38,28 +40,32 @@ const Explore = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleTextInputChange = (value: string) => {
+    onChangeSearchQuery(value);
+  };
+
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <TextInput
-          placeholder="Search"
-          clearButtonMode="always"
-          style={styles.searchBox}
-          autoCapitalize="none"
-          autoCorrect={false}
-          value={searchQuery}
-          onChangeText={onChangeSearchQuery}
-        />
-        <FlatList
-          data={data}
-          renderItem={({item}) => (
-            // filterData
-            <Item id={item.id} url={item.url} description={item.description} />
-          )}
-          keyExtractor={item => item.id}
-        />
-      </View>
-    </SafeAreaView>
+    <>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <SafeAreaView style={styles.container}>
+          <CustomSearchBar onTextInputChange={handleTextInputChange} />
+          <FlatList
+            data={data}
+            renderItem={({item}) => (
+              // filterData
+              <Item
+                id={item.id}
+                url={item.url}
+                description={item.description}
+              />
+            )}
+            keyExtractor={item => item.id}
+          />
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 

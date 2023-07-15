@@ -11,6 +11,8 @@ import {
   TextInput,
 } from 'react-native';
 import Button from '../components/Button';
+import CustomModal from '../components/CustomModal';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,12 @@ const Profile = () => {
     getProfile();
   }, []);
 
-  const updateTask = () => {
+  const updateTask = (
+    id: string,
+    name: string,
+    email: string,
+    image: string,
+  ) => {
     fetch(`${url}`, {
       method: 'PUT',
       headers: {
@@ -64,73 +71,52 @@ const Profile = () => {
   const handleVisibleModal = () => {
     setViisble(!visible);
   };
-  const handelUpdateTask = () => {
-    updateTask();
-    setViisble(!visible);
+  const handelUpdateTask = (name: string, email: string, avatar: string) => {
+    updateTask(id, name, email, avatar);
+    getProfile();
+    handleVisibleModal();
   };
 
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        {loading ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <View style={styles.container}>
-            <Modal animationType="slide" visible={visible}>
-              <SafeAreaView>
-                <View style={styles.form}>
-                  <TouchableOpacity onPress={handleVisibleModal}>
-                    <Text style={styles.txtClose}>Close</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    value={name}
-                    style={styles.text_input}
-                    placeholder="Name"
-                    onChangeText={onChangeName}
-                  />
-                  <TextInput
-                    value={email}
-                    style={styles.text_input}
-                    placeholder="Email Address"
-                    onChangeText={onChangeEmail}
-                  />
-
-                  <TextInput
-                    value={image}
-                    style={styles.text_input}
-                    placeholder="Image Url"
-                    onChangeText={onChangeImage}
-                  />
-                  <TouchableOpacity
-                    onPress={handelUpdateTask}
-                    style={styles.btnModalContainer}>
-                    <Text style={styles.textButton}>{'Update'}</Text>
-                  </TouchableOpacity>
-                </View>
-              </SafeAreaView>
-            </Modal>
-            <Image source={{uri: image}} style={styles.image} />
-            <View>
-              <Text style={styles.textName}>{name}</Text>
-              <Text style={styles.textEmail}> {email}</Text>
-            </View>
-            <View style={styles.header_container}>
-              <Button
-                isRed={false}
-                name="Edit Profile"
-                handleOnPress={handleVisibleModal}
-              />
-            </View>
+    <>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <SafeAreaView style={styles.container}>
+          <CustomModal
+            visible={visible}
+            handelUpdateTask1={handelUpdateTask}
+            handleOnPressClose={handleVisibleModal}
+            input1={name}
+            input2={email}
+            input3={image}
+          />
+          <Image source={{uri: image}} style={styles.image} />
+          <View>
+            <Text style={styles.textName}>{name}</Text>
+            <Text style={styles.textEmail}> {email}</Text>
           </View>
-        )}
-      </View>
-    </SafeAreaView>
+          <View style={styles.header_container}>
+            <Button
+              isRed={false}
+              name="Edit Profile"
+              handleOnPress={handleVisibleModal}
+            />
+          </View>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 
 export default Profile;
 
 const styles = StyleSheet.create({
+  indicator_container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     padding: 10,
     height: '100%',
@@ -155,6 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 100 / 2,
     borderWidth: 3,
     borderColor: '#FFFFFF',
+    marginTop: 20,
   },
   header_container: {
     padding: 20,
