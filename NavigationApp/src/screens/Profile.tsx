@@ -10,6 +10,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import Button from '../components/Button';
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -114,11 +115,11 @@ const Profile = () => {
               <Text style={styles.textEmail}> {email}</Text>
             </View>
             <View style={styles.header_container}>
-              <TouchableOpacity
-                onPress={handleVisibleModal}
-                style={styles.btnNewContainer}>
-                <Text style={styles.textButton}>Edit Profile</Text>
-              </TouchableOpacity>
+              <Button
+                isRed={false}
+                name="Edit Profile"
+                handleOnPress={handleVisibleModal}
+              />
             </View>
           </View>
         )}

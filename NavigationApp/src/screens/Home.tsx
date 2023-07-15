@@ -10,6 +10,7 @@ import {
   TextInput,
   Switch,
 } from 'react-native';
+import Button from '../components/Button';
 
 const Home = () => {
   const [data, setData] = useState<dataType[]>([]);
@@ -176,11 +177,11 @@ const Home = () => {
       <View style={styles.container}>
         <View style={styles.header_container}>
           <Text style={styles.txt_main}>List of Tasks</Text>
-          <TouchableOpacity
-            onPress={handleVisibleModal}
-            style={styles.btnNewContainer}>
-            <Text style={styles.textButton}>New Task</Text>
-          </TouchableOpacity>
+          <Button
+            isRed={false}
+            name="New Task"
+            handleOnPress={handleVisibleModal}
+          />
         </View>
         <Modal animationType="slide" visible={visible}>
           <SafeAreaView>
@@ -205,28 +206,34 @@ const Home = () => {
                 placeholder="Desc"
                 onChangeText={onChangeDesc}
               />
-              <Text style={{fontSize: 20, padding: 5}}>Status:</Text>
-              <Switch
-                trackColor={{false: '#767577', true: 'green'}}
-                thumbColor={'white'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isCompleted}
-                style={{padding: 10}}
-              />
+              <View
+                style={{
+                  paddingVertical: 10,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{fontSize: 20}}>Status:</Text>
+                <Switch
+                  trackColor={{false: '#767577', true: 'green'}}
+                  thumbColor={'white'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isCompleted}
+                />
+              </View>
 
               {isUpdate ? (
-                <TouchableOpacity
-                  onPress={handelUpdateTask}
-                  style={styles.btnModalContainer}>
-                  <Text style={styles.textButton}>{'Update'}</Text>
-                </TouchableOpacity>
+                <Button
+                  isRed={false}
+                  name="Update"
+                  handleOnPress={handelUpdateTask}
+                />
               ) : (
-                <TouchableOpacity
-                  onPress={handleAddTask}
-                  style={styles.btnModalContainer}>
-                  <Text style={styles.textButton}>{'Submit'}</Text>
-                </TouchableOpacity>
+                <Button
+                  isRed={false}
+                  name="Submit"
+                  handleOnPress={handleAddTask}
+                />
               )}
             </View>
           </SafeAreaView>
