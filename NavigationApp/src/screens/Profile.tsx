@@ -1,15 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Modal,
-  TextInput,
-} from 'react-native';
+import {SafeAreaView, View, Image, StyleSheet, Text} from 'react-native';
 import Button from '../components/Button';
 import CustomModal from '../components/CustomModal';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -39,10 +29,6 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    getProfile();
-  }, []);
-
   const updateTask = (
     id: string,
     name: string,
@@ -71,11 +57,16 @@ const Profile = () => {
   const handleVisibleModal = () => {
     setViisble(!visible);
   };
+
   const handelUpdateTask = (name: string, email: string, avatar: string) => {
     updateTask(id, name, email, avatar);
     getProfile();
     handleVisibleModal();
   };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
 
   return (
     <>
@@ -96,7 +87,7 @@ const Profile = () => {
             <Text style={styles.textName}>{name}</Text>
             <Text style={styles.textEmail}> {email}</Text>
           </View>
-          <View style={styles.header_container}>
+          <View style={styles.btnContainer}>
             <Button
               isRed={false}
               name="Edit Profile"
@@ -112,11 +103,6 @@ const Profile = () => {
 export default Profile;
 
 const styles = StyleSheet.create({
-  indicator_container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   container: {
     padding: 10,
     height: '100%',
@@ -143,55 +129,10 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
     marginTop: 20,
   },
-  header_container: {
+  btnContainer: {
     padding: 20,
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  btnNewContainer: {
-    padding: 10,
-    backgroundColor: 'green',
-    borderRadius: 15,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 3, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  textButton: {
-    textAlign: 'center',
-    color: '#FFF',
-  },
-  text_input: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  txtClose: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'red',
-    marginVertical: 10,
-    textAlign: 'right',
-  },
-  form: {
-    padding: 20,
-    // backgroundColor : "#e3e3e3",
-    marginTop: 10,
-  },
-  btnModalContainer: {
-    marginTop: 20,
-    padding: 10,
-    width: '50%',
-    backgroundColor: 'green',
-    borderRadius: 15,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 3, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
   },
 });

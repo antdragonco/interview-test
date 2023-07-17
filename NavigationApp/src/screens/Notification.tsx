@@ -1,17 +1,18 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-} from 'react-native';
+import {SafeAreaView, View, FlatList, StyleSheet, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 const Notification = () => {
-  type dataType = {id: string; message: string; read: boolean};
+  const [data, setData] = useState<dataType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const url = 'http://localhost:3000/notifications';
+
+  type dataType = {
+    id: string;
+    message: string;
+    read: boolean;
+  };
 
   const Item = ({id, message, read}: dataType) => (
     <View key={id} style={styles.item}>
@@ -20,7 +21,7 @@ const Notification = () => {
           <Text style={styles.title}>{message}</Text>
           <Text
             style={styles.title}
-            onPress={() => handleClick(id, message, !read)}>
+            onPress={() => handleRead(id, message, !read)}>
             Unread
           </Text>
         </View>
@@ -29,7 +30,7 @@ const Notification = () => {
           <Text style={styles.title_unread}>{message}</Text>
           <Text
             style={styles.title_unread}
-            onPress={() => handleClick(id, message, !read)}>
+            onPress={() => handleRead(id, message, !read)}>
             Read
           </Text>
           {/* <Icon name="circle-thin" size={24} color="red" /> */}
@@ -38,10 +39,6 @@ const Notification = () => {
     </View>
   );
 
-  const [data, setData] = useState<dataType[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const url = 'http://localhost:3000/notifications';
   const getItems = async () => {
     try {
       const response = await fetch(url);
@@ -53,10 +50,6 @@ const Notification = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getItems();
-  }, []);
 
   const updateItem = (id: string, message: string, read: boolean) => {
     fetch(`${url}/${id}`, {
@@ -77,10 +70,14 @@ const Notification = () => {
       });
   };
 
-  const handleClick = (id: string, message: string, read: boolean) => {
+  const handleRead = (id: string, message: string, read: boolean) => {
     updateItem(id, message, read);
     getItems();
   };
+
+  useEffect(() => {
+    getItems();
+  }, []);
 
   return (
     <>

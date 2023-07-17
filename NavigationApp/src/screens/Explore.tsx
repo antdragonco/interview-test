@@ -5,14 +5,22 @@ import {
   StyleSheet,
   Text,
   Image,
-  TextInput,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import LoadingIndicator from '../components/LoadingIndicator';
 import CustomSearchBar from '../components/CustomSearchBar';
 
 const Explore = () => {
-  type dataType = {id: string; url: string; description: string};
+  const [data, setData] = useState<dataType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, onChangeSearchQuery] = useState('');
+  const url = 'http://localhost:3000/images';
+
+  type dataType = {
+    id: string;
+    url: string;
+    description: string;
+  };
 
   const Item = ({id, url, description}: dataType) => {
     if (
@@ -27,11 +35,10 @@ const Explore = () => {
       );
   };
 
-  const [data, setData] = useState<dataType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, onChangeSearchQuery] = useState('');
+  const handleTextInputChange = (value: string) => {
+    onChangeSearchQuery(value);
+  };
 
-  const url = 'http://localhost:3000/images';
   useEffect(() => {
     fetch(url)
       .then(response => response.json())
@@ -39,10 +46,6 @@ const Explore = () => {
       .catch(error => console.log(error))
       .finally(() => setLoading(false));
   }, []);
-
-  const handleTextInputChange = (value: string) => {
-    onChangeSearchQuery(value);
-  };
 
   return (
     <>

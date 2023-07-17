@@ -23,6 +23,7 @@ const Home = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const toggleSwitch = () => setIsCompleted(previousState => !previousState);
+  const url = 'http://localhost:3000/items';
 
   type dataType = {
     id: string;
@@ -33,24 +34,15 @@ const Home = () => {
 
   const Item = ({id, title, description, completed}: dataType) => (
     <View key={id} style={styles.item}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
+      <View style={styles.titleContainer}>
         <Text style={styles.title}>{title}</Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            marginBottom: 10,
-          }}>
+        <View style={styles.btnContainer}>
           <TouchableOpacity onPress={() => handelDelete(id)}>
             <Text style={styles.txt_del}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              handleVisibleUpdate(id, title, description, completed)
+              handleVisibleUpdateModal(id, title, description, completed)
             }>
             <Text style={styles.txt_edit}>Edit</Text>
           </TouchableOpacity>
@@ -61,8 +53,7 @@ const Home = () => {
     </View>
   );
 
-  const url = 'http://localhost:3000/items';
-
+  //get all task items
   const getTask = async () => {
     try {
       const response = await fetch(url);
@@ -75,10 +66,7 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    getTask();
-  }, []);
-
+  //post task
   const addTask = () => {
     fetch(url, {
       method: 'POST',
@@ -95,7 +83,13 @@ const Home = () => {
     });
   };
 
-  const updateTask = (id: string) => {
+  //put task
+  const updateTask = (
+    id: string,
+    title: string,
+    desc: string,
+    isCompleted: boolean,
+  ) => {
     fetch(`${url}/${id}`, {
       method: 'PUT',
       headers: {
@@ -103,7 +97,7 @@ const Home = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: taskId,
+        id: id,
         title: title,
         description: desc,
         completed: isCompleted,
@@ -115,19 +109,7 @@ const Home = () => {
       });
   };
 
-  const handleAddTask = () => {
-    setViisble(!visible);
-    setIsUpdate(false);
-    if (title && desc) {
-      addTask();
-      getTask();
-      onChangeTitle('');
-      onChangeDesc('');
-    } else {
-      console.log('Empty Submission');
-    }
-  };
-
+  //delete tasks
   const handelDelete = (id: string) => {
     fetch(`${url}/${id}`, {
       method: 'DELETE',
@@ -137,19 +119,54 @@ const Home = () => {
         setData(values => {
           return values.filter(item => item.id !== id);
         });
+        console.log('Successfully deleted!');
       });
+
+    getTask();
   };
 
-  const handleVisibleModal = () => {
-    setViisble(!visible);
-    setIsUpdate(false);
+  const resetItems = () => {
+    setTaskId('');
     onChangeTitle('');
     onChangeDesc('');
     setIsCompleted(false);
-    setTaskId('');
   };
 
-  const handleVisibleUpdate = (
+  //update tasks
+  const handelUpdateTask = () => {
+    if (title) {
+      updateTask(taskId, title, desc, isCompleted);
+      getTask();
+      handleVisibleModal();
+    } else {
+      console.log('Empty Submission');
+    }
+  };
+
+  //add new task
+  const handleAddTask = () => {
+    handleVisibleModal();
+    setIsUpdate(false);
+    if (title && desc) {
+      addTask();
+      getTask();
+      resetItems();
+    } else {
+      console.log('Empty Submission');
+    }
+  };
+
+  //toggles modal visibility by resetting values
+  const handleVisibleModal = () => {
+    setViisble(!visible);
+    setIsUpdate(false);
+    if (title || desc) {
+      resetItems();
+    }
+  };
+
+  //update/edit task
+  const handleVisibleUpdateModal = (
     id: string,
     title: string,
     desc: string,
@@ -159,19 +176,13 @@ const Home = () => {
     onChangeTitle(title);
     onChangeDesc(desc);
     setIsCompleted(completed);
-    setViisble(!visible);
+    handleVisibleModal();
     setIsUpdate(true);
   };
 
-  const handelUpdateTask = () => {
-    if (title) {
-      updateTask(taskId);
-      getTask();
-      setViisble(!visible);
-    } else {
-      console.log('Empty Submission');
-    }
-  };
+  useEffect(() => {
+    getTask();
+  }, []);
 
   return (
     <>
@@ -191,11 +202,6 @@ const Home = () => {
             <Modal animationType="slide" visible={visible}>
               <SafeAreaView>
                 <View style={styles.form}>
-                  {/* <Text>
-                {' '}
-                {taskId} {title} {desc} {isCompleted.toString()}
-              </Text> */}
-
                   <TouchableOpacity onPress={handleVisibleModal}>
                     <Text style={styles.txtClose}>Close</Text>
                   </TouchableOpacity>
@@ -283,12 +289,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
   },
+  titleContainer: {flexDirection: 'row', justifyContent: 'space-between'},
   title: {
     fontSize: 24,
     marginBottom: 10,
   },
   desc: {
     fontSize: 14,
+  },
+  header_container: {
+    padding: 20,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
   },
   txt_del: {
     fontSize: 14,
@@ -301,42 +319,6 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontWeight: 'bold',
   },
-  header_container: {
-    padding: 20,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  txt_main: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  btnNewContainer: {
-    padding: 10,
-    backgroundColor: 'green',
-    borderRadius: 15,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 3, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  btnModalContainer: {
-    marginTop: 20,
-    padding: 10,
-    width: '50%',
-    backgroundColor: 'green',
-    borderRadius: 15,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 3, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  textButton: {
-    textAlign: 'center',
-    color: '#FFF',
-  },
   txtClose: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -344,16 +326,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: 'right',
   },
-  form: {
-    padding: 20,
-    // backgroundColor : "#e3e3e3",
-    marginTop: 10,
-  },
   text_input: {
     padding: 10,
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 10,
+    marginTop: 10,
+  },
+  txt_main: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  form: {
+    padding: 20,
     marginTop: 10,
   },
 });
